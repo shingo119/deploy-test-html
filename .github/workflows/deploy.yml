@@ -9,21 +9,6 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Get Composer Cache Directory
-        id: composer-cache
-        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
-
-      - name: Cache dependencies
-        uses: actions/cache@v2
-        with:
-          path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-composer-
-
       - name: deploy at remote server
         uses: appleboy/ssh-action@master
         with:
@@ -36,28 +21,17 @@ jobs:
           script_stop: true
           script: |
             source .bashrc
-            cd $DIR
-            
-            if [ -d conoha-test ]; then
-              cd conoha-test
-            fi
-            pwd
+            cd public_html
 
             # .git directoryがなければcloneする
             if [ ! -d .git ]; then
-              git clone https://github.com/shingo119/conoha-test.git
+              git clone https://github.com/shingo119/deploy-test-html.git
+            fi
+
+            if [ -d "deploy-test-html" ]; then
+              cd deploy-test-html
             fi
 
             git pull origin main
-
-            # composerがインストールされていなければインストールする
-            if [ ! -f composer.phar ]; then
-                curl -sS https://getcomposer.org/installer | php
-            fi
-
-            php composer.phar install
-            mysql.server start
-            php artisan migrate --force
-            php artisan db:seed --force
         env:
-          DIR: public_html/yubase-conoha-test.com
+          DIR: public_html/deploy-test-html.com
