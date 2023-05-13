@@ -21,7 +21,7 @@ jobs:
           script_stop: true
           script: |
             source .bashrc
-            cd public_html
+            cd $DIR
 
             # .git directoryがなければcloneする
             if [ ! -d .git ]; then
