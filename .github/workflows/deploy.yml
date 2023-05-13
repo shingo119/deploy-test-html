@@ -12,7 +12,6 @@ jobs:
       - name: deploy at remote server
         uses: appleboy/ssh-action@master
         with:
-          remote_path: 
           host:     ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key:      ${{ secrets.SSH_KEY }}
@@ -25,11 +24,8 @@ jobs:
 
             # .git directoryがなければcloneする
             if [ ! -d .git ]; then
-              git clone https://github.com/shingo119/deploy-test-html.git
-            fi
-
-            if [ -d "deploy-test-html" ]; then
-              cd deploy-test-html
+              git init
+              git remote add origin https://github.com/shingo119/deploy-test-html.git
             fi
 
             git pull origin main
